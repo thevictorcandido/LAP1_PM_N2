@@ -29,7 +29,7 @@ import java.util.List;
 
 
 public class VendaDia {
-    
+
     //#region atributos
     private LocalDate data;
     private List<Produto> produtos;
@@ -86,6 +86,17 @@ public class VendaDia {
         return venda;
     }
 
+    private int numClassificacao() {
+        String classificacao = classificacao();
+        Integer num = switch (classificacao) {
+            case "Ótimo" -> 5;
+            case "Bom" -> 4;
+            case "Regular" -> 3;
+            case "Ruim" -> 2;
+            default -> 1;
+        };
+        return num;
+    }
     /**
      * Indica se este dia de vendas foi melhor do que outro, de acordo com a classificação
      * em faixas da mercearia.
@@ -93,8 +104,13 @@ public class VendaDia {
      * @return TRUE caso este dia tenha sido melhor, FALSE caso contrário.
      */
     public boolean melhorQue(VendaDia outroDia){
-        //TODO
-        return false;
+        boolean melhor = false;
+        int liquidoHoje = this.numClassificacao();
+        int liquidoOutroDia = outroDia.numClassificacao();
+        if (liquidoHoje > liquidoOutroDia) {
+            melhor = true;
+        }
+        return melhor;
     }
 
     /**
@@ -102,8 +118,24 @@ public class VendaDia {
      * @return Uma string de uma única palavra indicando a classificação deste dia.
      */
     public String classificacao(){
-        //TODO
-        return "";
+        double liquidoString = this.faturamento() - this.valorImpostos();
+        String classificacao = "";
+        if (liquidoString >= 1500d) {
+            classificacao = "Ótimo";
+        }
+        if (liquidoString >= 1000d || liquidoString < 1500d) {
+            classificacao = "Bom";
+        }
+        if (liquidoString >= 400d || liquidoString < 1000d) {
+            classificacao = "Regular";
+        }
+        if (liquidoString >= 100d || liquidoString < 400d) {
+            classificacao = "Ruim";
+        }
+        if (liquidoString < 100d) {
+            classificacao = "Péssimo";
+        }
+        return classificacao;
     }
 
     /**
